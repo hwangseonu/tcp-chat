@@ -35,9 +35,9 @@ class ChatThread extends Thread {
     public ChatThread(Socket socket) throws IOException {
         this.socket = socket;
         this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.id = reader.readLine() + "(" + socket.getInetAddress().getHostAddress() + ")";
+        this.id = reader.readLine() + "(" + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + ")";
 
-        this.broadcast(id + " enter the chatroom");
+        this.broadcast(id + " enter this chat.");
 
         synchronized (socketMap) {
             socketMap.put(this.id, new PrintWriter(new OutputStreamWriter(socket.getOutputStream())));
@@ -58,7 +58,7 @@ class ChatThread extends Thread {
             synchronized (socketMap) {
                 socketMap.remove(this.id);
             }
-            broadcast(this.id + " quit the chat");
+            broadcast(this.id + " quit this chat.");
             try {
                 if (this.socket != null) {
                     this.socket.close();
