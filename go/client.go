@@ -22,6 +22,7 @@ func main() {
 	fmt.Scanf("%s", &name)
 
 	conn, err := net.Dial("tcp", os.Args[1] + PORT)
+	conn.Write([]byte(name + "\n"))
 
 	if err != nil {
 		log.Fatalln(err)
@@ -31,13 +32,14 @@ func main() {
 
 	go handleSocket(conn)
 
+
 	for {
 		r := bufio.NewReader(os.Stdin)
 		fmt.Print("> ")
 
 		if l, _, err := r.ReadLine(); err != nil {
 			log.Fatalln(err)
-		} else if _, err := conn.Write(l); err != nil {
+		} else if _, err := conn.Write(append(l, '\n')); err != nil {
 			log.Fatalln(err)
 		}
 	}
@@ -52,6 +54,10 @@ func handleSocket(conn net.Conn) {
 			if err == io.EOF {
 				return
 			}
+			log.Fatalln(err)
+		}
+
+		if err != nil {
 			log.Fatalln(err)
 		}
 		fmt.Println("\r" + string(line))

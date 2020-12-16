@@ -67,7 +67,7 @@ class PrintThread extends Thread {
         try {
             String line;
             while((line = this.reader.readLine()) != null) {
-                System.out.println(line);
+                System.out.println("\r" + line);
                 System.out.print("> ");
             }
         } catch (IOException e) {
