@@ -29,7 +29,7 @@ class ChatThread extends Thread {
     private final String id;
     private final BufferedReader reader;
 
-    public static final HashMap<String, PrintWriter> members = new HashMap<>();
+    public static final HashMap<String, PrintWriter> socketMap = new HashMap<>();
 
 
     public ChatThread(Socket socket) throws IOException {
@@ -39,8 +39,8 @@ class ChatThread extends Thread {
 
         this.broadcast(id + " enter the chatroom");
 
-        synchronized (members) {
-            members.put(this.id, new PrintWriter(new OutputStreamWriter(socket.getOutputStream())));
+        synchronized (socketMap) {
+            socketMap.put(this.id, new PrintWriter(new OutputStreamWriter(socket.getOutputStream())));
         }
     }
 
@@ -55,8 +55,8 @@ class ChatThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            synchronized (members) {
-                members.remove(this.id);
+            synchronized (socketMap) {
+                socketMap.remove(this.id);
             }
             broadcast(this.id + " quit the chat");
             try {
@@ -71,10 +71,10 @@ class ChatThread extends Thread {
 
     public void broadcast(String message) {
         System.out.println(message);
-        synchronized (members) {
-            for (PrintWriter member : members.values()) {
-                member.println(message);
-                member.flush();
+        synchronized (socketMap) {
+            for (PrintWriter writer : socketMap.values()) {
+                writer.println(message);
+                writer.flush();
             }
         }
     }

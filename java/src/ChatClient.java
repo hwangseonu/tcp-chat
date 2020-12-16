@@ -3,20 +3,31 @@ import java.net.Socket;
 
 public class ChatClient {
 
-    public static final String HOST = "localhost";
-    public static final int PORT = 7007;
-
     public static void main(String[] args) {
         Socket socket = null;
         PrintWriter writer = null;
         BufferedReader reader = null;
 
         try {
-            System.out.print("Username: ");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
+            System.out.print("server ip: ");
+            String ip = input.readLine();
+
+            System.out.print("server port: ");
+            int port = 0;
+            try {
+                port = Integer.parseInt(input.readLine());
+            } catch (NumberFormatException e) {
+                System.out.println("port must be number");
+                System.exit(-1);
+            }
+
+            System.out.print("Username: ");
             String id = input.readLine();
 
-            socket = new Socket(HOST, PORT);
+
+            socket = new Socket(ip, port);
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -27,10 +38,13 @@ public class ChatClient {
             thread.start();
 
             String line;
-            while((line = input.readLine()) != null) {
+            do {
+                System.out.print("> ");
+                line = input.readLine();
+                if (line == null) break;
                 writer.println(line);
                 writer.flush();
-            }
+            } while (true);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -42,9 +56,7 @@ public class ChatClient {
                 e.printStackTrace();
             }
         }
-
     }
-
 }
 
 class PrintThread extends Thread {
@@ -63,7 +75,7 @@ class PrintThread extends Thread {
             String line;
             while((line = this.reader.readLine()) != null) {
                 System.out.println(line);
-
+                System.out.print("> ");
             }
         } catch (IOException e) {
             e.printStackTrace();
