@@ -3,31 +3,24 @@ import java.net.Socket;
 
 public class ChatClient {
 
+    public static final int PORT = 7007;
+
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("args: <server ip>");
+            System.exit(-1);
+        }
+
         Socket socket = null;
         PrintWriter writer = null;
         BufferedReader reader = null;
 
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-
-            System.out.print("server ip: ");
-            String ip = input.readLine();
-
-            System.out.print("server port: ");
-            int port = 0;
-            try {
-                port = Integer.parseInt(input.readLine());
-            } catch (NumberFormatException e) {
-                System.out.println("port must be number");
-                System.exit(-1);
-            }
-
             System.out.print("Username: ");
             String id = input.readLine();
 
-
-            socket = new Socket(ip, port);
+            socket = new Socket(args[0], PORT);
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
